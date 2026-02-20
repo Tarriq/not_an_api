@@ -1,46 +1,63 @@
 import { Router } from "express";
 import {
+  getRadarStory,
+  updateRadarStory,
+} from "../controllers/storyController/radar.controller.js";
+import {
   addRecommendation,
+  getRecommendations,
+  removeRecommendation,
+} from "../controllers/storyController/recommendations.controller.js";
+import {
   createStory,
   deleteStory,
   editStory,
   getHiddenStories,
-  getRadarStory,
-  getRecommendations,
   getStories,
   getStory,
-  removeRecommendation,
   republishStory,
   unpublishStory,
-  updateRadarStory,
-} from "../controllers/storyController.js";
+} from "../controllers/storyController/stories.controller.js";
+import { createStorySave, deleteStorySave, getSavedStories } from "../controllers/storyController/saves.controller.js";
 
 const router = Router();
 
-router.get("/radar", getRadarStory);
-
-router.patch("/radar/:id", updateRadarStory);
-
-router.get("/recommended", getRecommendations);
-
-router.post("/recommended", addRecommendation);
-
-router.delete("/recommended", removeRecommendation);
-
 router.get("/", getStories);
 
-router.get("/hidden", getHiddenStories);
+router.get("/s/:id", getStory);
 
-router.get("/:id", getStory);
+router.get("/hidden", getHiddenStories);
 
 router.post("/", createStory);
 
 router.patch("/:id", editStory);
 
-router.patch("/:id/unpublish", unpublishStory);
+router.patch("/republish/:id", republishStory);
 
-router.patch("/:id/republish", republishStory);
+router.patch("/unpublish/:id", unpublishStory);
 
-router.delete("/:id", deleteStory);
+// router.delete("/:id", deleteStory);
+
+// ------------------ Radar ------------------
+
+router.get("/radar", getRadarStory);
+
+router.patch("/radar/:id", updateRadarStory);
+
+// ------------- Recommendations -------------
+
+router.get("/recommended", getRecommendations);
+
+router.patch("/:id/recommend", addRecommendation);
+
+router.delete("/:id/recommend", removeRecommendation);
+
+// -------------------Saves ------------------
+
+router.get("/saved/:userId", getSavedStories);
+
+router.post("/save", createStorySave);
+
+router.delete("/save", deleteStorySave);
 
 export default router;

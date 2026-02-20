@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import prisma from "../prisma/client.js";
+import { prisma } from "../prisma/prisma.js";
 
 // GET /categories
 export const getCategories = async (req: Request, res: Response) => {
@@ -9,6 +9,26 @@ export const getCategories = async (req: Request, res: Response) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to fetch categories" });
+  }
+};
+
+export const getActiveCategories = async (req: Request, res: Response) => {
+  try {
+    const categories = await prisma.category.findMany({
+      where: {
+        stories: {
+          some: {},
+        },
+      },
+      orderBy: {
+        name: "asc",
+      },
+    });
+
+    res.json(categories);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch active categories" });
   }
 };
 
@@ -48,7 +68,7 @@ export const deleteCategory = async (req: Request, res: Response) => {
   try {
     await prisma.category.delete({
       where: {
-        id,
+        id: id as string,
       },
     });
     res.status(204).send();
@@ -74,14 +94,14 @@ export const editCategory = async (req: Request, res: Response) => {
   try {
     await prisma.category.update({
       where: {
-        id,
+        id: id as string,
       },
       data: {
         name: name.toString(),
         description: description.toString(),
       },
     });
-    res.status(200).json({ message: "Category updated successfully" });
+    res.status(204).send();
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to update category" });

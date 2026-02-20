@@ -1,7 +1,6 @@
 import type { Request, Response } from "express";
-import prisma from "../prisma/client.js";
+import { prisma } from "../prisma/prisma.js";
 
-// POST /user
 export const createUser = async (req: Request, res: Response) => {
   "use server";
 
@@ -26,9 +25,8 @@ export const createUser = async (req: Request, res: Response) => {
   }
 };
 
-// GET /user/:id
-export const getUserById = async (req: Request, res: Response) => {
-  const { id } = req.params;
+export const getUser = async (req: Request, res: Response) => {
+    const { id } = req.params;
 
   if (!id) {
     return res.status(400).json({ error: "User ID is required" });
@@ -36,7 +34,7 @@ export const getUserById = async (req: Request, res: Response) => {
 
   try {
     const user = await prisma.user.findUnique({
-      where: { id },
+      where: { id: id as string },
     });
     res.json(user);
   } catch (err) {
@@ -45,9 +43,8 @@ export const getUserById = async (req: Request, res: Response) => {
   }
 };
 
-// PATCH /user/:id
 export const updateUser = async (req: Request, res: Response) => {
-  const { id } = req.params;
+    const { id } = Array.isArray(req.params) ? req.params[0] : req.params;
 
   if (!id) {
     return res.status(400).json({ error: "User ID is required" });
@@ -68,6 +65,8 @@ export const updateUser = async (req: Request, res: Response) => {
         lastName,
       },
     });
+
+    res.status(201).send()
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to update user" });
@@ -81,23 +80,26 @@ export const createSubscriber = async (req: Request, res: Response) => {
     return res.status(400).json({ error: "Email is required" });
   }
 
-  // Check if email is already in the subscribers list
-  const existingSubscriber = await prisma.subscriber.findUnique({
-    where: { email },
-  });
-
-  if (existingSubscriber) {
-    return res.status(400).json({ error: "Email is already subscribed" });
-  }
-
   try {
+    const existingSubscriber = await prisma.subscriber.findUnique({
+      where: { email },
+    });
+
+    if (existingSubscriber) {
+      return res.status(200).json({ 
+        message: "Email already subscribed", 
+        alreadySubscribed: true 
+      });
+    }
+
     await prisma.subscriber.create({
       data: {
         email,
         phone: phone || null,
       },
     });
-    res.status(201).json({ message: "Subscribed successfully" });
+
+    res.status(201).json({ message: "Thanks for subscribing!" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to subscribe" });

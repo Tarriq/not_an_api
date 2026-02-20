@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon",
+    "dev": "tsx watch src/server/start.ts",
     "build": "tsc",
     "start": "node dist/server/start.js"
   },
@@ -13,17 +13,24 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
-    "@prisma/client": "^6.19.0",
-    "express": "^5.1.0",
-    "multer": "^2.0.2",
-    "prisma": "^6.19.0"
+    "@prisma/adapter-mariadb": "^7.4.0",
+    "@prisma/client": "^7.4.0",
+    "dotenv": "^17.2.4",
+    "express": "^5.1.0"
   },
   "devDependencies": {
     "@types/express": "^5.0.5",
     "@types/multer": "^2.0.0",
-    "@types/node": "^24.10.1",
-    "nodemon": "^3.1.11",
+    "@types/node": "^24.10.13",
+    "@types/pg": "^8.16.0",
+    "prisma": "^7.4.0",
     "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3"
+  },
+  "overrides": {
+    "hono": "^4.11.0",
+    "lodash": "^4.17.21",
+    "@mrleebo/prisma-ast": "0.14.0"
   }
 }
