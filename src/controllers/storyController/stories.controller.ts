@@ -7,7 +7,6 @@ import {
   STORY_RELATIONS,
 } from "../../helpers/story.helpers.js";
 import { prisma } from "../../prisma/prisma.js";
-import { log } from "console";
 
 export const getStories = async (req: Request, res: Response) => {
   try {
