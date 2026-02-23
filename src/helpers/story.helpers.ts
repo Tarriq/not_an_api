@@ -74,7 +74,7 @@ export const STORY_RELATIONS = {
 const INTERNAL_FIELDS = {
   isTrashed: true,
   isRecommended: true,
-  isRadar: true,
+  // isRadar: true,
   content: true,
   updatedAt: true,
 };
