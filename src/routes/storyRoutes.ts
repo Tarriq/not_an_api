@@ -1,4 +1,5 @@
 import { Router } from "express";
+import multer from "multer";
 import {
   getRadarStory,
   updateRadarStory,
@@ -17,8 +18,15 @@ import {
   getStory,
   republishStory,
   unpublishStory,
-} from "../controllers/storyController/stories.controller.js";
+} from "../controllers/storyController/story.controller.js";
 import { createStorySave, deleteStorySave, getSavedStories } from "../controllers/storyController/saves.controller.js";
+
+const upload = multer({ storage: multer.memoryStorage() });
+
+const storyUploads = upload.fields([
+  { name: "thumbnail", maxCount: 1 },
+  { name: "editor_images", maxCount: 10 }
+]);
 
 const router = Router();
 
@@ -28,9 +36,9 @@ router.get("/s/:id", getStory);
 
 router.get("/hidden", getHiddenStories);
 
-router.post("/", createStory);
+router.post("/", storyUploads, createStory);
 
-router.patch("/:id", editStory);
+router.patch("/:id", storyUploads, editStory);
 
 router.patch("/republish/:id", republishStory);
 

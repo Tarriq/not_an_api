@@ -4,9 +4,12 @@ import { validateApiKey } from '../middleware/auth.js';
 
 
 const app = express();
+app.use(validateApiKey);
+
 app.use(express.json());
 
-app.use(validateApiKey);
+app.use(express.urlencoded({ extended: true }));
+
 
 app.use("/", apiRouter)
 

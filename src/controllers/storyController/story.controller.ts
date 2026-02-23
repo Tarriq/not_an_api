@@ -7,6 +7,7 @@ import {
   STORY_RELATIONS,
 } from "../../helpers/story.helpers.js";
 import { prisma } from "../../prisma/prisma.js";
+import { processStoryAssets } from "../../helpers/file.helpers.js";
 
 export const getStories = async (req: Request, res: Response) => {
   try {
@@ -33,6 +34,7 @@ export const getStories = async (req: Request, res: Response) => {
     const stories = await fetchStories({
       where: queryFilter,
       omit: { content: true },
+      orderBy: { createdAt: "desc" },
     });
 
     res.json(stories);
@@ -42,7 +44,7 @@ export const getStories = async (req: Request, res: Response) => {
   }
 };
 
-export const getHiddenStories = async (req: Request, res: Response) => {  
+export const getHiddenStories = async (req: Request, res: Response) => {
   try {
     const stories = await fetchStories({
       where: { isPublished: false },
@@ -63,7 +65,7 @@ export const getStory = async (req: Request, res: Response) => {
     if (!id) return res.status(400).json({ error: "MISSING_STORY_ID" });
 
     const story = await prisma.story.findUnique({
-      where: { id: id as string},
+      where: { id: id as string },
       include: {
         ...STORY_RELATIONS.include,
         save: userId ? { where: { userId: String(userId) } } : false,
@@ -92,31 +94,30 @@ export const getStory = async (req: Request, res: Response) => {
 
 export const createStory = async (req: Request, res: Response) => {
   try {
-    const {
+    const { title, content, borough, summary, authorId } = req.body;
+    const categoryIds = Array.isArray(req.body.categoryIds)
+      ? req.body.categoryIds
+      : req.body.categoryIds ? [req.body.categoryIds] : [];
+
+    const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+    const thumbnailFile = files["thumbnail"]?.[0];
+    const editorFiles = files["editor_images"] || [];
+
+    if (!thumbnailFile) return res.status(400).json({ error: "Thumbnail is required" });
+
+    const { updatedContent, thumbnailUrl } = await processStoryAssets(
       title,
       content,
-      borough,
-      summary,
-      categoryIds,
-      thumbnailUrl,
-      authorId,
-    } = req.body;
+      thumbnailFile,
+      editorFiles
+    );
 
-    if (
-      !title ||
-      !content ||
-      !borough ||
-      !summary ||
-      !authorId ||
-      !thumbnailUrl
-    ) {
-      return res.status(400).json({ error: "Missing required fields" });
-    }
+    if (!thumbnailUrl) return res.status(400).json({ error: "Failed to process thumbnail" });
 
     const newStory = await prisma.story.create({
       data: {
         title,
-        content,
+        content: updatedContent,
         borough,
         summary,
         thumbnail: thumbnailUrl,
@@ -125,46 +126,53 @@ export const createStory = async (req: Request, res: Response) => {
       },
     });
 
-    if (categoryIds?.length) {
+    if (categoryIds.length) {
       await processCategories(newStory.id, categoryIds);
     }
 
     res.status(201).json(newStory);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to create story" });
+    console.error("CREATE_STORY_ERROR:", err)
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
 export const editStory = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { title, content, borough, summary, categoryIds, thumbnailUrl } =
-      req.body;
+    const { title, content, borough, summary, categoryIds } = req.body;
 
-    if (!id) return res.status(400).json({ error: "Story ID is required" });
+    const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+    const thumbnailFile = files["thumbnail"]?.[0]; 
+    const editorFiles = files["editor_images"] || [];    
+
+    const { updatedContent, thumbnailUrl } = await processStoryAssets(
+      title,
+      content,
+      thumbnailFile,
+      editorFiles
+    );
 
     await prisma.story.update({
       where: { id: id as string },
       data: {
         title,
-        content,
+        content: updatedContent,
         borough,
         summary,
-        thumbnail: thumbnailUrl,
+        ...(thumbnailUrl && { thumbnail: thumbnailUrl }), 
       },
     });
 
     if (categoryIds) {
-      await processCategories(id as string, categoryIds);
+      const ids = Array.isArray(categoryIds) ? categoryIds : [categoryIds];
+      await processCategories(id as string, ids);
     }
 
-    res.status(200).send();
-  } catch (err: any) {
-    if (err.code === "P2025")
-      return res.status(404).json({ error: "Story not found" });
-    console.error("Edit Story Error:", err);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(200).json({ success: true });
+  } catch (err) {
+    console.error("EDIT_STORY_ERROR:", err);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
