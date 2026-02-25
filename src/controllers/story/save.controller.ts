@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
-import { prisma } from "../../prisma/prisma.js";
-import { fetchStories } from "../../helpers/story.helpers.js";
+import { prisma } from "@/prisma/index.js";
+import { fetchStories } from "./helpers/story.helpers.js";
 
 export const createStorySave = async (req: Request, res: Response) => {
   try {

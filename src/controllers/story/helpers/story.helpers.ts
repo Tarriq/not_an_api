@@ -1,5 +1,5 @@
-import { prisma } from "../prisma/prisma.js";
-import type { Prisma } from "../generated/client.js";
+import { prisma } from "@/prisma/index.js";
+import type { Prisma } from "@/generated/client.js";
 
 export function getStoryData(formData: FormData) {
   const [title, content, borough, summary] = [

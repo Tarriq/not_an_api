@@ -1,5 +1,5 @@
 import express from 'express';
-import apiRouter from '../routes/global.router.js';
+import apiRouter from '../routes/router.js';
 import { validateApiKey } from '../middleware/auth.js';
 
 

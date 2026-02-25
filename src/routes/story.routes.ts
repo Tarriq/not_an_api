@@ -3,12 +3,12 @@ import multer from "multer";
 import {
   getRadarStory,
   updateRadarStory,
-} from "../controllers/storyController/radar.controller.js";
+} from "../controllers/story/radar.controller.js";
 import {
   addRecommendation,
   getRecommendations,
   removeRecommendation,
-} from "../controllers/storyController/recommendations.controller.js";
+} from "../controllers/story/recommendation.controller.js";
 import {
   createStory,
   deleteStory,
@@ -18,8 +18,8 @@ import {
   getStory,
   republishStory,
   unpublishStory,
-} from "../controllers/storyController/story.controller.js";
-import { createStorySave, deleteStorySave, getSavedStories } from "../controllers/storyController/saves.controller.js";
+} from "../controllers/story/story.controller.js";
+import { createStorySave, deleteStorySave, getSavedStories } from "../controllers/story/save.controller.js";
 
 const upload = multer({ storage: multer.memoryStorage() });
 

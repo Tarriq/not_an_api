@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
-import { flattenCategories, STORY_RELATIONS } from "../../helpers/story.helpers.js";
-import { prisma } from "../../prisma/prisma.js";
+import { flattenCategories, STORY_RELATIONS } from "./helpers/story.helpers.js";
+import { prisma } from "@/prisma/index.js";
 
 export const getRadarStory = async (_req: Request, res: Response) => {
   try {

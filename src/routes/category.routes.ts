@@ -5,7 +5,7 @@ import {
   editCategory,
   getActiveCategories,
   getCategories,
-} from "../controllers/category.controller.js";
+} from "../controllers/category/category.controller.js";
 
 const router = Router();
 
