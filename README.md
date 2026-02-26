@@ -6,14 +6,6 @@ This repository contains the source code for the backend API powering The Not Pr
 
 ---
 
-## ✍️ Founders
-
-- **Lorenzo Gonzalez** — Creator of the concept and lead content producer
-- **Tariq El Ghayate** — Lead developer of the platform
-- **Sebastian Torres** — Creative Producer & Co-Developer
-
----
-
 ## 🛠️ Tech Stack
 
 - **Runtime & Framework:** Node.js, Express, TypeScript
@@ -54,7 +46,7 @@ npm install
 Copy the example environment file. This includes configurations for AWS S3, Cloudfront, Resend, and the RDS Connection String.
 
 ```bash
-cp .env.example .env.local
+cp .env.example .env
 ```
 
 > [!IMPORTANT]
@@ -104,6 +96,15 @@ src/
 │   └── start.ts                 # Server entry point
 └── types/                       # TypeScript interfaces/types
 ```
+---
+
+### 🔐 Security & Media
+
+- **Authentication:** The API uses a shared secret strategy. The `auth.ts` middleware intercepts requests to ensure they originate from authorized sources (like the Next.js frontend).
+- **Media Pipeline:** Images received via `createStory` and `editStory` are compressed using **Sharp** to optimize performance, uploaded to **AWS S3**, and served globally via **Cloudfront** URLs.
+- **Database:** Hosted on **AWS RDS (MySQL)**, configured to only accept traffic from the application's EC2 instance or authorized IAM users.
+
+---
 
 ## 🌐 Deployment
 

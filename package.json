@@ -36,5 +36,8 @@
     "hono": "^4.11.0",
     "lodash": "^4.17.21",
     "@mrleebo/prisma-ast": "0.14.0"
+  }, 
+  "engines": {
+    "node": ">=20.9.0"
   }
 }
