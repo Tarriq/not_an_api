@@ -1,10 +1,10 @@
 import express from 'express';
 import apiRouter from '../routes/router.js';
-import { validateApiKey } from '../middleware/auth.js';
+import { verifyOidcMiddleware } from '../middleware/auth.js';
 
 
 const app = express();
-app.use(validateApiKey);
+app.use(verifyOidcMiddleware);
 
 app.use(express.json());
 
