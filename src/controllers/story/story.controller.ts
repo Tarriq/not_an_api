@@ -9,7 +9,7 @@ import {
 import { prisma } from "@/prisma/index.js";
 import { processStoryAssets } from "./helpers/file.helpers.js";
 
-export const getStories = async (req: Request, res: Response) => {
+export async function getStories(req: Request, res: Response) {
   try {
     const { search, boroughs, categories } = req.query;
 
@@ -42,9 +42,9 @@ export const getStories = async (req: Request, res: Response) => {
     console.error("Error in getStories:", err);
     res.status(500).json({ error: "Failed to fetch stories" });
   }
-};
+}
 
-export const getHiddenStories = async (req: Request, res: Response) => {
+export async function getHiddenStories(req: Request, res: Response) {
   try {
     const stories = await fetchStories({
       where: { isPublished: false },
@@ -55,9 +55,9 @@ export const getHiddenStories = async (req: Request, res: Response) => {
     console.error(err);
     res.status(500).json({ error: "Failed to fetch hidden stories" });
   }
-};
+}
 
-export const getStory = async (req: Request, res: Response) => {
+export async function getStory(req: Request, res: Response) {
   try {
     const { id } = req.params;
     const { userId } = req.query;
@@ -90,29 +90,33 @@ export const getStory = async (req: Request, res: Response) => {
     console.error(err);
     res.status(500).json({ error: "Failed to fetch story" });
   }
-};
+}
 
-export const createStory = async (req: Request, res: Response) => {
+export async function createStory(req: Request, res: Response) {
   try {
     const { title, content, borough, summary, authorId } = req.body;
     const categoryIds = Array.isArray(req.body.categoryIds)
       ? req.body.categoryIds
-      : req.body.categoryIds ? [req.body.categoryIds] : [];
+      : req.body.categoryIds
+        ? [req.body.categoryIds]
+        : [];
 
     const files = req.files as { [fieldname: string]: Express.Multer.File[] };
     const thumbnailFile = files["thumbnail"]?.[0];
     const editorFiles = files["editor_images"] || [];
 
-    if (!thumbnailFile) return res.status(400).json({ error: "Thumbnail is required" });
+    if (!thumbnailFile)
+      return res.status(400).json({ error: "Thumbnail is required" });
 
     const { updatedContent, thumbnailUrl } = await processStoryAssets(
       title,
       content,
       thumbnailFile,
-      editorFiles
+      editorFiles,
     );
 
-    if (!thumbnailUrl) return res.status(400).json({ error: "Failed to process thumbnail" });
+    if (!thumbnailUrl)
+      return res.status(400).json({ error: "Failed to process thumbnail" });
 
     const newStory = await prisma.story.create({
       data: {
@@ -132,25 +136,25 @@ export const createStory = async (req: Request, res: Response) => {
 
     res.status(201).json(newStory);
   } catch (err) {
-    console.error("CREATE_STORY_ERROR:", err)
+    console.error("CREATE_STORY_ERROR:", err);
     res.status(500).json({ error: "Internal Server Error" });
   }
-};
+}
 
-export const editStory = async (req: Request, res: Response) => {
+export async function editStory(req: Request, res: Response) {
   try {
     const { id } = req.params;
     const { title, content, borough, summary, categoryIds } = req.body;
 
     const files = req.files as { [fieldname: string]: Express.Multer.File[] };
-    const thumbnailFile = files["thumbnail"]?.[0]; 
-    const editorFiles = files["editor_images"] || [];    
+    const thumbnailFile = files["thumbnail"]?.[0];
+    const editorFiles = files["editor_images"] || [];
 
     const { updatedContent, thumbnailUrl } = await processStoryAssets(
       title,
       content,
       thumbnailFile,
-      editorFiles
+      editorFiles,
     );
 
     await prisma.story.update({
@@ -160,7 +164,7 @@ export const editStory = async (req: Request, res: Response) => {
         content: updatedContent,
         borough,
         summary,
-        ...(thumbnailUrl && { thumbnail: thumbnailUrl }), 
+        ...(thumbnailUrl && { thumbnail: thumbnailUrl }),
       },
     });
 
@@ -174,9 +178,9 @@ export const editStory = async (req: Request, res: Response) => {
     console.error("EDIT_STORY_ERROR:", err);
     res.status(500).json({ error: "Internal Server Error" });
   }
-};
+}
 
-export const unpublishStory = async (req: Request, res: Response) => {
+export async function unpublishStory(req: Request, res: Response) {
   try {
     const { id } = req.params;
 
@@ -194,9 +198,9 @@ export const unpublishStory = async (req: Request, res: Response) => {
     console.error(err);
     res.status(500).json({ error: "Failed to unpublish story" });
   }
-};
+}
 
-export const republishStory = async (req: Request, res: Response) => {
+export async function republishStory(req: Request, res: Response) {
   try {
     const { id } = req.params;
 
@@ -214,9 +218,9 @@ export const republishStory = async (req: Request, res: Response) => {
     console.error(err);
     res.status(500).json({ error: "Failed to republish story" });
   }
-};
+}
 
-export const deleteStory = async (req: Request, res: Response) => {
+export async function deleteStory(req: Request, res: Response) {
   try {
     const { id } = Array.isArray(req.params) ? req.params[0] : req.params;
 
@@ -245,4 +249,4 @@ export const deleteStory = async (req: Request, res: Response) => {
     console.error(err);
     res.status(500).json({ error: "Failed to delete story" });
   }
-};
+}

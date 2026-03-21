@@ -2,7 +2,7 @@ import type { Request, Response } from "express";
 import { fetchStories } from "./helpers/story.helpers.js";
 import { prisma } from "@/prisma/index.js";
 
-export const getRecommendations = async (req: Request, res: Response) => {
+export async function getRecommendations(req: Request, res: Response) {
   try {
     const stories = await fetchStories({
       where: { isRecommended: true },
@@ -16,7 +16,7 @@ export const getRecommendations = async (req: Request, res: Response) => {
   }
 };
 
-export const addRecommendation = async (req: Request, res: Response) => {
+export async function addRecommendation(req: Request, res: Response) {
   try {
     const { id } = req.params;
 
@@ -37,7 +37,7 @@ export const addRecommendation = async (req: Request, res: Response) => {
   }
 };
 
-export const removeRecommendation = async (req: Request, res: Response) => {
+export async function removeRecommendation(req: Request, res: Response) {
   try {
     const { id } = req.params;
     if (!id) {

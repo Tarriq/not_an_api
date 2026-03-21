@@ -2,7 +2,7 @@ import type { Request, Response } from "express";
 import { flattenCategories, STORY_RELATIONS } from "./helpers/story.helpers.js";
 import { prisma } from "@/prisma/index.js";
 
-export const getRadarStory = async (_req: Request, res: Response) => {
+export async function getRadarStory(_req: Request, res: Response) {
   try {
     let story = await prisma.story.findFirst({
       where: { isPublished: true, isRadar: true },
@@ -47,7 +47,7 @@ export const getRadarStory = async (_req: Request, res: Response) => {
   }
 };
 
-export const updateRadarStory = async (req: Request, res: Response) => {
+export async function updateRadarStory (req: Request, res: Response) {
   try {
     const { id } = req.params;
 

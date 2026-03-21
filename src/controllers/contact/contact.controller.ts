@@ -3,7 +3,7 @@ import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-export const handleContactForm = async (req: Request, res: Response) => {
+export async function handleContactForm (req: Request, res: Response) {
   const { message, email, type, token } = req.body;
 
   if (!message || !type) {

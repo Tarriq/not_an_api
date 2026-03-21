@@ -2,19 +2,19 @@ import type { Request, Response } from "express";
 import { prisma } from "@/prisma/index.js";
 
 // GET /categories
-export const getCategories = async (req: Request, res: Response) => {
+export async function getCategories(req: Request, res: Response) {
   try {
     const categories = await prisma.category.findMany({
-      orderBy: { name: "asc"}
+      orderBy: { name: "asc" },
     });
     res.json(categories);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to fetch categories" });
   }
-};
+}
 
-export const getActiveCategories = async (req: Request, res: Response) => {
+export async function getActiveCategories(req: Request, res: Response) {
   try {
     const categories = await prisma.category.findMany({
       where: {
@@ -32,10 +32,10 @@ export const getActiveCategories = async (req: Request, res: Response) => {
     console.error(err);
     res.status(500).json({ error: "Failed to fetch active categories" });
   }
-};
+}
 
 // POST /categories
-export const createCategory = async (req: Request, res: Response) => {
+export async function createCategory(req: Request, res: Response) {
   try {
     const { name, description } = req.body;
 
@@ -57,10 +57,10 @@ export const createCategory = async (req: Request, res: Response) => {
     console.error(err);
     res.status(500).json({ error: "Failed to create category" });
   }
-};
+}
 
 // DELETE /categories/:id
-export const deleteCategory = async (req: Request, res: Response) => {
+export async function deleteCategory(req: Request, res: Response) {
   const { id } = req.params;
 
   if (!id) {
@@ -78,10 +78,10 @@ export const deleteCategory = async (req: Request, res: Response) => {
     console.error(err);
     res.status(500).json({ error: "Failed to delete category" });
   }
-};
+}
 
 // PATCH /categories/:id
-export const editCategory = async (req: Request, res: Response) => {
+export async function editCategory(req: Request, res: Response) {
   const { id } = req.params;
 
   if (!id) {
@@ -108,4 +108,4 @@ export const editCategory = async (req: Request, res: Response) => {
     console.error(err);
     res.status(500).json({ error: "Failed to update category" });
   }
-};
+}

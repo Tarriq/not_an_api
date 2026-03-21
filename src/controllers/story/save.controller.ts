@@ -2,12 +2,12 @@ import type { Request, Response } from "express";
 import { prisma } from "@/prisma/index.js";
 import { fetchStories } from "./helpers/story.helpers.js";
 
-export const createStorySave = async (req: Request, res: Response) => {
+export async function createStorySave(req: Request, res: Response) {
   try {
     const { storyId, userId } = req.body;
 
     if (!storyId || !userId) {
-      return res.status(400).json({ error: 'storyId and userId are required' });
+      return res.status(400).json({ error: "storyId and userId are required" });
     }
 
     await prisma.save.create({
@@ -17,43 +17,41 @@ export const createStorySave = async (req: Request, res: Response) => {
     res.status(201).send();
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Failed to save story' });
+    res.status(500).json({ error: "Failed to save story" });
   }
-};
+}
 
-
-export const getSavedStories = async (req: Request, res: Response) => {
+export async function getSavedStories(req: Request, res: Response) {
   try {
     const { userId } = req.params;
 
     if (!userId) {
-      return res.status(400).json({ error: 'userId is required' });
+      return res.status(400).json({ error: "userId is required" });
     }
 
     const stories = await fetchStories({
-    where: {
-      save: {
-        some: {
-          userId: userId as string,
+      where: {
+        save: {
+          some: {
+            userId: userId as string,
+          },
         },
       },
-    },
-  });
-
+    });
 
     res.json(stories);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Failed to fetch saved stories' });
+    res.status(500).json({ error: "Failed to fetch saved stories" });
   }
-};
+}
 
-export const deleteStorySave = async (req: Request, res: Response) => {
+export async function deleteStorySave(req: Request, res: Response) {
   try {
     const { storyId, userId } = req.body;
 
     if (!storyId || !userId) {
-      return res.status(400).json({ error: 'storyId and userId are required' });
+      return res.status(400).json({ error: "storyId and userId are required" });
     }
 
     await prisma.save.deleteMany({
@@ -63,6 +61,6 @@ export const deleteStorySave = async (req: Request, res: Response) => {
     res.status(200).json({ success: true });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Failed to unsave story' });
+    res.status(500).json({ error: "Failed to unsave story" });
   }
-};
+}
