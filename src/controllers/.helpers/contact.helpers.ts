@@ -21,9 +21,9 @@ export async function sendContactEmail(type: string, content: string) {
   await resend.emails.send({
     from: "The Not Project <contact@thenotproject.com>",
     to: [
-    //   "lorenzo@thenotproject.com",
+      "lorenzo@thenotproject.com",
       "elghayate02@gmail.com",
-    //   "sebastian.torres.codes@gmail.com",
+      "sebastian.torres.codes@gmail.com",
     ],
     subject:
       type === "collab"
